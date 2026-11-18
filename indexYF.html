@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yégle Flood</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g9:#11302A;--g8:#174A3A;--g7:#1F6B50;--g4:#8FB3A6;--g3:#A9CDBF;--g2:#DCEBE4;--g1:#EEF3F1;
+  --ink:#1B2B26;--muted:#5E6F68;--line:#E3EAE6;--card:#fff;
+  --blue:#2E86AB;--org:#E0992F;--orgbg:#FBEBD2;--red:#C9432E;--redbg:#F8E1DC;--okbg:#DCEDE5;--gray:#8A9A93;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:'DM Sans',system-ui,sans-serif;color:var(--ink);background:#DCE7E2}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,.pop{font-family:'Poppins','DM Sans',sans-serif;letter-spacing:-.4px}
+.row{display:flex;align-items:center;gap:10px}
+.sb{justify-content:space-between}
+[hidden]{display:none!important}
+
+/* ===== layout ===== */
+#layout{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:24px}
+#phoneWrap{flex-shrink:0}
+.phone{width:390px;height:min(844px,calc(100vh - 48px));background:#F4F7F5;border-radius:42px;position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 70px rgba(17,48,42,.28),0 0 0 9px #11302A}
+@media(max-width:520px){
+  #layout{padding:0}
+  .phone{width:100vw;height:100vh;height:100dvh;border-radius:0;box-shadow:none}
+}
+
+/* ===== phone ===== */
+#screen{flex:1;overflow-y:auto;overflow-x:hidden;padding:22px 18px 26px;position:relative}
+#screen.full{padding:0;overflow:hidden}
+h1{font-size:30px;font-weight:800;line-height:1.1;color:var(--g9)}
+.sub{color:var(--muted);font-size:14px;margin-top:4px}
+.card{background:var(--card);border-radius:20px;padding:16px;box-shadow:0 1px 2px rgba(17,48,42,.05)}
+.hdr{display:flex;align-items:center;gap:12px;margin:6px 0 18px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--g7);display:grid;place-items:center;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.hdr-t{flex:1}
+.hdr-t b{font-family:Poppins,sans-serif;font-size:20px;font-weight:800;color:var(--g9);display:block;line-height:1.15}
+.hdr-t span{font-size:13px;color:var(--muted)}
+.bellb{width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;position:relative;box-shadow:0 1px 3px rgba(17,48,42,.1)}
+.bellb i{position:absolute;top:10px;right:11px;width:9px;height:9px;border-radius:50%;background:var(--red);border:2px solid #fff}
+
+.vig{background:var(--g8);color:#fff;border-radius:24px;padding:20px;margin-bottom:16px}
+.vig.v2{background:linear-gradient(140deg,#8F2A1C,#C9432E)}
+.vig .lab{font-size:13.5px;opacity:.85}
+.vbadge{font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px}
+.vbadge.v0{background:var(--g3);color:var(--g9)}
+.vbadge.v1{background:var(--org);color:#3B2600}
+.vbadge.v2{background:#fff;color:var(--red)}
+.vig h2{font-size:21px;font-weight:700;line-height:1.3;margin:12px 0 16px}
+.wbtn{background:#fff;color:var(--g9);font-weight:700;font-size:14.5px;padding:11px 16px;border-radius:12px;display:inline-flex;align-items:center;gap:8px}
+.signal{width:100%;border:2px dashed var(--org);border-radius:20px;padding:16px;display:flex;gap:14px;align-items:center;text-align:left;background:#FFFDF8;margin-bottom:16px}
+.signal .sic{width:48px;height:48px;border-radius:14px;background:var(--g2);display:grid;place-items:center;flex-shrink:0}
+.signal b{font-size:16px;display:block;color:var(--g9)}
+.signal small{font-size:13.5px;color:var(--muted);line-height:1.35;display:block;margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.stats div{background:#fff;border-radius:18px;padding:14px}
+.stats b{font-family:Poppins,sans-serif;font-size:27px;font-weight:700;display:block;line-height:1.2}
+.stats span{font-size:13px;color:var(--muted)}
+.c-red{color:var(--red)}.c-org{color:#B87500}.c-grn{color:var(--g7)}
+.sech{margin-bottom:10px}
+.sech h3{font-family:Poppins,sans-serif;font-size:19px;font-weight:700;color:var(--g9)}
+.link{color:var(--g7);font-weight:700;font-size:14px}
+.rep{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.rep:last-child{border-bottom:none}
+.ric{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex-shrink:0}
+.ric.r{background:var(--redbg)}.ric.o{background:var(--orgbg)}.ric.b{background:#DDEEF5}.ric.g{background:var(--okbg)}
+.rep .t{flex:1;min-width:0}
+.rep .t b{font-size:15px;display:block;line-height:1.3}
+.rep .t span{font-size:12.5px;color:var(--muted)}
+.st{font-size:12px;font-weight:700;padding:4px 9px;border-radius:99px;white-space:nowrap}
+.st.s-new{background:var(--redbg);color:var(--red)}
+.st.s-chk{background:var(--orgbg);color:#9A6100}
+.st.s-ok{background:var(--okbg);color:var(--g7)}
+
+/* capteurs */
+.addb{width:52px;height:52px;border-radius:50%;background:var(--g8);display:grid;place-items:center;flex-shrink:0}
+.feat{margin:18px 0 22px;padding:18px}
+.feat .id{font-size:14px;color:var(--muted);font-weight:600}
+.feat .big{font-family:Poppins,sans-serif;font-size:44px;font-weight:800;color:var(--g9);line-height:1.05}
+.feat .big small{font-size:20px;font-weight:600;color:var(--muted);font-family:'DM Sans',sans-serif}
+.bdg{font-size:13px;font-weight:700;padding:6px 11px;border-radius:99px;white-space:nowrap}
+.b0{background:var(--okbg);color:var(--g7)}.b1{background:var(--org);color:#3B2600}.b2{background:var(--red);color:#fff}.b3{background:#E6EAE8;color:var(--muted)}
+.bars{position:relative;height:150px;margin:28px 0 6px;display:flex;align-items:flex-end;gap:5px}
+.bars i{flex:1;border-radius:5px 5px 2px 2px;transition:height .6s ease}
+.seuil{position:absolute;left:0;right:0;border-top:2px dashed var(--red);z-index:1}
+.seuil span{position:absolute;right:0;top:-20px;font-size:12.5px;color:var(--red);font-weight:700}
+.axis{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:14px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tiles div{background:var(--g1);border-radius:14px;padding:10px 11px}
+.tiles span{font-size:12.5px;color:var(--muted);display:block}
+.tiles b{font-size:16px;display:block;margin-top:2px}
+.oth{padding:15px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.oth:last-child{border-bottom:none}
+.oth b{font-size:15.5px}
+.pbar{height:9px;border-radius:99px;background:#E6ECE9;overflow:hidden;flex:1}
+.pbar i{display:block;height:100%;border-radius:99px;transition:width .6s ease}
+.oth .v{font-size:13px;color:var(--muted);white-space:nowrap}
+.measure{background:var(--g9);color:#DCEBE4;border-radius:18px;padding:16px;margin-top:16px}
+.measure h3{font-family:Poppins,sans-serif;font-size:15px;color:#fff;margin-bottom:8px}
+.measure .f{font-size:20px;font-weight:700;color:#fff;font-family:Poppins,sans-serif;margin:6px 0}
+.measure p{font-size:13px;line-height:1.5;opacity:.85}
+
+/* carte */
+.mapwrap{position:absolute;inset:0;background:#F1F4F1}
+#msvg{position:absolute;inset:0;width:100%;height:100%}
+.mtop{position:absolute;left:0;right:0;top:0;padding:22px 16px 0;background:linear-gradient(#F4F7F5 72%,rgba(244,247,245,0));pointer-events:none}
+.mtop > *{pointer-events:auto}
+.mtop h1{font-size:23px}
+.mtop .sub{font-size:13px}
+.filt{width:46px;height:46px;border-radius:14px;background:#fff;display:grid;place-items:center;box-shadow:0 1px 3px rgba(17,48,42,.12)}
+.banner{background:#FBE4DE;border:1px solid #F0B9AC;border-radius:14px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;margin-top:12px}
+.banner b{color:#A3311F;font-size:14.5px;display:block}
+.banner span{font-size:12.5px;color:#5E3A33;line-height:1.35;display:block}
+.banner em{font-style:normal;background:var(--red);color:#fff;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:7px;white-space:nowrap}
+.mchips{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.mchips span{background:#fff;border-radius:99px;padding:6px 11px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;box-shadow:0 1px 2px rgba(17,48,42,.1)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.mk{cursor:pointer}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pul 1.6s ease-out infinite}
+@keyframes pul{from{transform:scale(.8);opacity:.6}to{transform:scale(2.2);opacity:0}}
+.msheet{position:absolute;left:12px;right:12px;bottom:12px;background:#fff;border-radius:22px;padding:16px;box-shadow:0 10px 30px rgba(17,48,42,.18)}
+.msheet .lv{font-family:Poppins,sans-serif;font-size:32px;font-weight:800;color:var(--g9)}
+.msheet .lv small{font-family:'DM Sans',sans-serif;font-size:15px;color:var(--muted);font-weight:500}
+.grad{height:9px;border-radius:99px;display:flex;overflow:visible;position:relative;margin:10px 0 14px}
+.grad u{height:100%}
+.grad i{position:absolute;top:-4px;width:4px;height:17px;border-radius:3px;background:var(--g9);transform:translateX(-2px);transition:left .6s ease}
+.btn2{flex:1;padding:13px 10px;border-radius:14px;font-weight:700;font-size:15px;background:var(--g8);color:#fff;text-align:center}
+.btn2.out{background:#fff;border:2px solid var(--g8);color:var(--g9)}
+
+/* alertes */
+.ntog{background:#fff;border-radius:99px;padding:7px 8px 7px 14px;display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;box-shadow:0 1px 3px rgba(17,48,42,.1)}
+.tg{width:42px;height:24px;border-radius:99px;background:#C3CEC9;position:relative;transition:.2s;flex-shrink:0;display:inline-block}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.tg.on{background:var(--g8)}
+.tg.on::after{left:21px}
+.seg{display:flex;background:#E3EAE6;border-radius:14px;padding:4px;margin:18px 0 14px}
+.seg button{flex:1;padding:9px 4px;border-radius:11px;font-weight:600;font-size:14.5px;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--g9);font-weight:700;box-shadow:0 1px 3px rgba(17,48,42,.12)}
+.al{background:#fff;border-radius:20px;padding:15px;margin-bottom:10px;display:flex;gap:12px;border:1.5px solid transparent}
+.al.hot{border-color:#EBAE9F}
+.al .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex-shrink:0}
+.ic.e2{background:var(--red)}.ic.e1{background:var(--org)}.ic.ok{background:var(--okbg)}.ic.mt{background:var(--g2)}.ic.dc{background:var(--orgbg)}
+.al .t{flex:1}
+.al b{font-size:16px;display:block;line-height:1.3;color:var(--ink)}
+.al p{font-size:14px;color:var(--muted);line-height:1.4;margin-top:3px}
+.al time{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.al .go{font-weight:700;font-size:14px;margin-top:8px;color:var(--g9);display:inline-block}
+.tips{background:var(--g9);color:#fff;border-radius:20px;padding:18px;margin-top:6px}
+.tips h3{font-family:Poppins,sans-serif;font-size:17px;margin-bottom:8px}
+.tips li{font-size:14px;line-height:1.45;margin:4px 0 4px 18px;opacity:.95}
+.sos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.sos div{background:#fff;border-radius:14px;padding:10px;text-align:center}
+.sos b{font-family:Poppins,sans-serif;font-size:20px;color:var(--red);display:block}
+.sos span{font-size:12px;color:var(--muted);font-weight:600}
+.disc{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.4}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:20px}
+
+/* nav */
+.nav{display:flex;background:#fff;border-top:1px solid var(--line);padding:9px 6px 12px;flex-shrink:0}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;color:var(--muted);font-weight:500;position:relative}
+.nav button.on{color:var(--g9);font-weight:700}
+.nav .nb{position:absolute;top:-3px;left:calc(50% + 6px);background:var(--red);color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:grid;place-items:center;padding:0 4px}
+
+/* sheets & toast */
+.sheetbg{position:absolute;inset:0;background:rgba(17,48,42,.45);z-index:40;display:flex;align-items:flex-end}
+.bsheet{background:#F4F7F5;width:100%;border-radius:26px 26px 0 0;padding:10px 18px 22px;max-height:92%;overflow-y:auto;animation:up .28s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.grab{width:42px;height:5px;border-radius:9px;background:#C6D1CC;margin:0 auto 12px}
+.bsheet h2{font-size:19px;color:var(--g9)}
+.x{width:34px;height:34px;border-radius:50%;background:#E3EAE6;font-size:20px;line-height:1}
+.fl{font-size:13px;font-weight:700;color:var(--muted);margin:14px 0 6px;display:block}
+.tch{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.tch button{padding:11px;border-radius:13px;background:#fff;border:2px solid var(--line);font-weight:600;font-size:14px;text-align:left}
+.tch button.on{border-color:var(--g7);background:var(--okbg);color:var(--g9)}
+.inp{width:100%;padding:12px 13px;border-radius:13px;border:1.5px solid var(--line);background:#fff;outline:none;font-size:15px}
+.inp:focus{border-color:var(--g7)}
+.photo{display:flex;align-items:center;gap:12px;padding:12px;border:2px dashed var(--g4);border-radius:14px;background:#fff;cursor:pointer;font-weight:600;color:var(--g8);font-size:14.5px}
+.photo input{display:none}
+.photo img{width:54px;height:54px;object-fit:cover;border-radius:10px}
+.btn{width:100%;padding:15px;border-radius:15px;background:var(--g8);color:#fff;font-weight:700;font-size:16px;margin-top:18px}
+.done{text-align:center;padding:20px 6px}
+.done .ok{width:64px;height:64px;border-radius:50%;background:var(--okbg);display:grid;place-items:center;margin:0 auto 14px}
+.done p{color:var(--muted);font-size:14.5px;line-height:1.5;margin-top:6px}
+#ptoast{position:absolute;left:12px;right:12px;top:-140px;z-index:60;transition:top .4s cubic-bezier(.2,.9,.3,1.15)}
+#ptoast.show{top:12px}
+#ptoast .t{background:var(--g9);color:#fff;border-radius:18px;padding:12px 14px;display:flex;gap:11px;align-items:center;box-shadow:0 12px 30px rgba(0,0,0,.3);cursor:pointer}
+#ptoast .t small{font-size:11px;opacity:.65;font-weight:600;letter-spacing:.3px;text-transform:uppercase;display:block}
+#ptoast .t b{font-size:14.5px;display:block}
+#ptoast .t span{font-size:13px;opacity:.85;display:block}
+.pin{background:#fff;border-radius:22px;padding:22px;margin:auto;width:86%;text-align:center}
+.pin input{text-align:center;letter-spacing:8px;font-size:22px;font-weight:700;margin:12px 0 4px}
+.pin .err{color:var(--red);font-size:13px;min-height:18px}
+
+</style>
+</head>
+<body class="mode-public">
+
+<div id="layout">
+
+
+  <div id="phoneWrap">
+
+    <div class="phone" id="phone">
+      <div id="screen"></div>
+      <nav class="nav" id="nav">
+        <button data-go="accueil"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg>Accueil</button>
+        <button data-go="capteurs"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 3a4 4 0 0 1 4 4c0 3-4 7-4 7s-4-4-4-7a4 4 0 0 1 4-4z"/><circle cx="12" cy="7" r="1.3"/><path d="M4 18c2.5-1.5 5.5-1.5 8 0s5.5 1.5 8 0M4 21c2.5-1.5 5.5-1.5 8 0s5.5 1.5 8 0"/></svg>Capteurs</button>
+        <button data-go="carte"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4z"/><path d="M9 4v14M15 6v14"/></svg>Carte</button>
+        <button data-go="alertes"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M18 9a6 6 0 0 0-12 0c0 6.5-2.5 8.5-2.5 8.5h17S18 15.5 18 9"/><path d="M13.7 20.5a2 2 0 0 1-3.4 0"/></svg>Alertes<span class="nb" id="navBadge" hidden></span></button>
+      </nav>
+      <div id="ptoast"></div>
+
+      <div class="sheetbg" id="repSheet" hidden>
+        <div class="bsheet">
+          <div class="grab"></div>
+          <div class="row sb"><h2>Signaler un point critique</h2><button class="x" data-act="closeRep">×</button></div>
+          <div id="repForm">
+            <span class="fl">Quel est le problème ?</span>
+            <div class="tch" id="rTypes">
+              <button data-rt="Caniveau obstrué" class="on">Caniveau obstrué</button>
+              <button data-rt="Eau qui monte">Eau qui monte</button>
+              <button data-rt="Eau stagnante">Eau stagnante</button>
+              <button data-rt="Déchets dans le canal">Déchets dans le canal</button>
+            </div>
+            <label class="fl" for="rQ">Quartier</label>
+            <select class="inp" id="rQ"></select>
+            <label class="fl" for="rPlace">Rue ou repère</label>
+            <input class="inp" id="rPlace" placeholder="Ex : Rue 12, devant l'école" maxlength="60">
+            <span class="fl">Photo</span>
+            <label class="photo"><input type="file" accept="image/*" id="rPhoto"><img id="rPrev" alt="" hidden><span id="rPhotoTxt">Ajouter une photo</span></label>
+            <button class="btn" data-act="sendRep">Envoyer le signalement</button>
+          </div>
+          <div class="done" id="repDone" hidden>
+            <div class="ok"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1F6B50" stroke-width="2.6" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <h2>Merci pour ton signalement !</h2>
+            <p>Il apparaît avec le statut « Signalé ». L'équipe va le vérifier, puis tu verras quand il passe à « Traité ».</p>
+            <button class="btn" data-act="closeRep">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const H=120, VIG=30, CRIT=40, MAXV=60;
+const LBL=['Normal','Vigilance','Critique','Hors ligne'];
+const COL=['#1F6B50','#E0992F','#C9432E','#8A9A93'];
+const QS=['Keur Massar','Pikine','Thiaroye','Guédiawaye','Yeumbeul','Parcelles A.'];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cache=new WeakMap();
+function setHTML(el,h){if(!el)return;if(cache.get(el)===h)return;cache.set(el,h);el.innerHTML=h}
+const hh=t=>{t=((Math.round(t)%1440)+1440)%1440;return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')};
+const cls=v=>v>=CRIT?2:v>=VIG?1:0;
+let UID=1;const uid=()=>UID++;
+
+const I={
+ drop:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5c3.6 4.9 6.2 8.3 6.2 11.6a6.2 6.2 0 0 1-12.4 0c0-3.3 2.6-6.7 6.2-11.6z"/></svg>',
+ bell:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#11302A" stroke-width="1.9" stroke-linecap="round"><path d="M18 9a6 6 0 0 0-12 0c0 6.5-2.5 8.5-2.5 8.5h17S18 15.5 18 9"/><path d="M13.7 20.5a2 2 0 0 1-3.4 0"/></svg>',
+ arrow:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+ cam:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F6B50" stroke-width="1.9" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg>',
+ warn:c=>'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="2.2" stroke-linecap="round"><path d="M12 9.5v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+ cloud:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F6B50" stroke-width="2" stroke-linecap="round"><path d="M19 15.5A4 4 0 0 0 17 8a6 6 0 0 0-11.3 1.5A3.5 3.5 0 0 0 6.5 16"/><path d="M8 19l-.7 2M12 18l-.7 2M16 19l-.7 2"/></svg>',
+ trash:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B87500" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+ check:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F6B50" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>',
+ drain:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9432E" stroke-width="2" stroke-linecap="round"><path d="M3 9h18M5 9v3a7 7 0 0 0 14 0V9M9 13h.01M12 14h.01M15 13h.01"/></svg>',
+ dropC:c=>'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="2" stroke-linejoin="round"><path d="M12 3c3.4 4.6 6 7.8 6 11a6 6 0 0 1-12 0c0-3.2 2.6-6.4 6-11z"/></svg>',
+ filt:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#11302A" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M7 12h10M10 17h4"/></svg>',
+ plus:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+};
+const RT={'Caniveau obstrué':['r',I.drain],'Eau qui monte':['b',I.dropC('#2E86AB')],'Eau stagnante':['o',I.dropC('#B87500')],'Déchets dans le canal':['o',I.trash]};
+const STC={'Signalé':'s-new','À vérifier':'s-chk','Traité':'s-ok'};
+
+/* ================= state ================= */
+let S;
+function mk(o){
+  const h=o.hist||Array(24).fill(o.level);
+  return Object.assign({base:10,sens:1,obst:false,off:false,bat:85,sig:4,conf:3,calm:0,alert:0,force:null,rate:1,release:false,repair:0,lastT:0,offT:0},o,{hist:h.slice(),prevC:cls(o.level),st:cls(o.level)});
+}
+function init(){
+  const t0=13*60+40;
+  const ramp=[];for(let i=0;i<24;i++)ramp.push(+(21+17*(1-Math.exp(-i/8))/(1-Math.exp(-23/8))+(Math.random()-.5)*.3).toFixed(1));ramp[23]=38;
+  S={t:t0,rain:0,wx:'sec',speed:2000,playing:true,page:'accueil',sel:'C-03',msel:null,filter:'all',notif:true,unread:0,showAll:false,
+     follow:new Set(QS),auto:false,admin:false,mode:'public',atab:'dash',pend:[],log:[],demo:{},rtype:'Caniveau obstrué',photo:null,
+     sensors:[
+       mk({id:'C-01',name:'Caniveau Rue 10',q:'Pikine',x:92,y:432,level:12,base:10,sens:.9,bat:88}),
+       mk({id:'C-02',name:'Point bas Marché',q:'Thiaroye',x:318,y:440,level:18,base:15,sens:1,bat:76,sig:3}),
+       mk({id:'C-03',name:'Canal Rue 12',q:'Keur Massar',x:216,y:352,level:38,base:12,sens:1.2,obst:true,alert:1,bat:82,hist:ramp}),
+       mk({id:'C-04',name:'Collecteur École',q:'Guédiawaye',x:300,y:276,level:15,base:12,sens:1,off:true,bat:6,sig:0,offT:t0-180}),
+       mk({id:'C-05',name:'Canal Yeumbeul',q:'Yeumbeul',x:84,y:250,level:22,base:16,sens:1.1,bat:91}),
+       mk({id:'C-06',name:'Caniveau Parcelles',q:'Parcelles A.',x:186,y:506,level:9,base:8,sens:.8,bat:69,sig:3})
+     ],
+     alerts:[
+       {id:uid(),type:'eau',lvl:1,sid:'C-03',active:true,t:t0-10,title:"Niveau d'eau élevé · Canal Rue 12",msg:"Le capteur C-03 approche du seuil d'alerte. Évitez les abords du canal."},
+       {id:uid(),type:'meteo',t:t0-60,title:'Fortes pluies attendues',msg:'Cet après-midi. Source : bulletin météo officiel.'},
+       {id:uid(),type:'dechets',t:t0-120,title:'3 caniveaux à curer',msg:"Priorité avant la pluie · équipe d'assainissement prévenue."},
+       {id:uid(),type:'ok',t:t0-1500,title:'Canal Rue 5 nettoyé',msg:'Déchets retirés et orientés vers le tri.'}
+     ],
+     reports:[
+       {id:uid(),type:'Caniveau obstrué',place:'Rue 10',q:'Pikine',status:'Signalé',t:t0-25},
+       {id:uid(),type:'Eau stagnante',place:'Marché',q:'Thiaroye',status:'À vérifier',t:t0-70},
+       {id:uid(),type:'Déchets dans le canal',place:'Rue 7',q:'Yeumbeul',status:'À vérifier',t:t0-140},
+       {id:uid(),type:'Caniveau obstrué',place:'Rue 5',q:'Keur Massar',status:'Traité',t:t0-1500},
+       {id:uid(),type:'Eau qui monte',place:'École',q:'Guédiawaye',status:'Traité',t:t0-1620},
+       {id:uid(),type:'Déchets dans le canal',place:'Marché',q:'Thiaroye',status:'Traité',t:t0-1700}
+     ]};
+  log('Système démarré : 5 capteurs en ligne sur 6 (C-04 hors ligne, batterie vide).','i');
+}
+const Z=id=>S.sensors.find(z=>z.id===id);
+function log(msg,l){S.log.unshift({t:S.t,msg,l:l==null?'i':l});if(S.log.length>80)S.log.pop()}
+function trend(z){const h=z.hist,n=h.length;if(n<6)return 0;return (h[n-1]-h[n-6])*6}/* cm/h : 5 mesures = 10 min */
+function ftr(tr){const r=Math.round(tr);return r===0?'stable':(r>0?'+':'−')+Math.abs(r)+' cm/h'}
+function suspect(z){
+  if(z.off)return[];const r=[],h=z.hist,n=h.length;
+  if(z.level>=VIG&&S.rain<1)r.push('Niveau élevé sans pluie');
+  if(S.rain<1&&z.level>z.base+8&&n>6&&(h[n-1]-h[n-6])>-1)r.push('Descente trop lente après la pluie');
+  if(n>4&&(h[n-1]-h[n-4])>3.5)r.push('Hausse rapide de la tendance');
+  return r;
+}
+function zState(z){return z.off?3:z.st}
+
+/* ================= simulation ================= */
+function tick(){
+  S.t+=2;
+  const target={sec:0,moderee:10,forte:34}[S.wx];
+  S.rain=target?Math.max(0,S.rain+(target-S.rain)*.35+(Math.random()-.5)*2):Math.max(0,S.rain*.5-.3);
+  S.sensors.forEach(z=>{
+    if(z.off){if(z.repair>0){z.repair--;if(!z.repair){z.off=false;z.bat=100;z.sig=4;log(z.id+' remis en ligne par le technicien (batterie remplacée).',0)}}return}
+    let v=z.level;
+    if(z.force!=null){
+      const d=z.force-v;v+=Math.sign(d)*Math.min(Math.abs(d),z.rate)+(Math.random()-.5)*.25;
+      if(z.release&&Math.abs(z.force-v)<.6){z.force=null;z.release=false}
+    }else{
+      const inflow=S.rain*.035*z.sens+(z.obst?.13:0);
+      const drain=v>z.base?(z.obst?.13:.55):0;
+      v+=inflow-drain+(Math.random()-.5)*.3;
+      v=Math.max(z.base*.85,v);
+    }
+    v=Math.min(MAXV+6,Math.max(2,v));
+    z.level=v;z.hist.push(v);if(z.hist.length>24)z.hist.shift();z.lastT=S.t;
+    if(Math.random()<.015)z.bat=Math.max(5,z.bat-1);
+    pipeline(z);
+  });
+  dirty=true;if(!ptr)render();
+}
+function pipeline(z){
+  const c=cls(z.level),prev=z.prevC;
+  z.conf=c===prev?z.conf+1:1;z.prevC=c;z.st=c;
+  const L=Math.round(z.level);
+  if(c!==prev)log(z.id+' mesure '+L+' cm → '+LBL[c]+(c>0?' (1re mesure, en attente de confirmation)':''),c);
+  let p=S.pend.find(p=>p.sid===z.id&&p.kind==='up');
+  if(c>0){
+    z.calm=0;
+    S.pend=S.pend.filter(p=>!(p.sid===z.id&&p.kind==='lift'));
+    if(z.conf>=2&&c>z.alert){
+      if(!p){p={id:uid(),kind:'up',sid:z.id,lvl:c,t:S.t};S.pend.unshift(p);log('Pré-alerte '+LBL[c].toLowerCase()+' pour '+z.id+' ('+z.q+') : '+L+' cm sur 2 mesures. En attente de validation.',c)}
+      else if(c>p.lvl){p.lvl=c;p.t=S.t;log('Pré-alerte '+z.id+' relevée au niveau critique ('+L+' cm).',2)}
+      if(S.auto&&c===2&&z.conf>=3){publishUp(p,true)}
+    }
+  }else{
+    if(p&&z.conf>=2){S.pend=S.pend.filter(x=>x!==p);log('Pré-alerte '+z.id+' annulée : niveau revenu à la normale avant validation.',0)}
+    if(z.alert>0){z.calm++;if(z.calm>=3&&!S.pend.find(p=>p.sid===z.id&&p.kind==='lift')){S.pend.unshift({id:uid(),kind:'lift',sid:z.id,t:S.t});log(z.id+' sous le seuil depuis 3 mesures : proposition de lever l\'alerte.',0)}}
+  }
+}
+function pushAlert(a){
+  a.id=uid();a.t=S.t;S.alerts.unshift(a);
+  if(S.notif){S.unread++;ptoast(a)}
+}
+function publishUp(p,auto){
+  const z=Z(p.sid);if(!z)return;
+  S.alerts.forEach(a=>{if(a.sid===z.id)a.active=false});
+  const L=Math.round(z.level);
+  pushAlert({type:'eau',lvl:p.lvl,sid:z.id,active:true,
+    title:(p.lvl===2?"Niveau critique · ":"Niveau d'eau élevé · ")+z.name,
+    msg:p.lvl===2?'Le capteur '+z.id+' mesure '+L+' cm (seuil '+CRIT+' cm) à '+z.q+'. Évitez les abords du canal et les points bas.':'Le capteur '+z.id+" approche du seuil d'alerte. Évitez les abords du canal."});
+  z.alert=p.lvl;S.pend=S.pend.filter(x=>x!==p);
+  log((auto?'Publication automatique':'Alerte validée par l\'agent')+' : '+LBL[p.lvl].toLowerCase()+' à '+z.q+' ('+z.id+'). Habitants notifiés.',p.lvl);
+}
+function lift(p){
+  const z=Z(p.sid);S.alerts.forEach(a=>{if(a.sid===z.id)a.active=false});
+  pushAlert({type:'eau',lvl:0,sid:z.id,title:"Fin d'alerte · "+z.name,msg:'Le niveau est revenu à la normale ('+Math.round(z.level)+' cm).'});
+  z.alert=0;S.pend=S.pend.filter(x=>x!==p);log('Alerte levée pour '+z.id+' ('+z.q+').',0);
+}
+function addReport(r){
+  r.id=uid();r.t=S.t;r.status='Signalé';S.reports.unshift(r);
+  log('Nouveau signalement : '+r.type+' · '+r.place+', '+r.q+'.','r');return r;
+}
+function sendTeam(r){r.status='À vérifier';log('Équipe envoyée vérifier : '+r.type+' · '+r.place+', '+r.q+'.','r')}
+function doneReport(r){
+  r.status='Traité';
+  const zs=S.sensors.filter(z=>z.q===r.q&&z.obst);
+  zs.forEach(z=>{z.obst=false;z.force=z.base+2;z.rate=2.5;z.release=true});
+  log('Intervention terminée : '+r.place+', '+r.q+(zs.length?' (curage, '+zs.map(z=>z.id).join(', ')+' débouché)':'')+'.',0);
+  pushAlert({type:'ok',title:r.place+' nettoyé'+(r.q?' · '+r.q:''),msg:'Déchets retirés et orientés vers le tri.'});
+}
+
+/* ================= public pages ================= */
+function vig(){
+  const act=S.alerts.filter(a=>a.type==='eau'&&a.active);
+  const crit=act.filter(a=>a.lvl===2);
+  if(crit.length){const qs=[...new Set(crit.map(a=>Z(a.sid).q))];return{l:2,lab:'Élevé',txt:'Alerte inondation à '+qs.join(', ')+'. Évitez les abords des canaux.'}}
+  const met=S.alerts.find(a=>a.type==='meteo'&&S.t-a.t<360);
+  const watch=act.length;
+  if(act.length||met){return{l:1,lab:'Modéré',txt:(met?'Pluie attendue cet après-midi. ':'')+(watch?watch+' zone'+(watch>1?'s':'')+' en vigilance.':'Restez attentifs.')}}
+  return{l:0,lab:'Faible',txt:'Aucune alerte en cours. Les capteurs veillent sur ton quartier.'}
+}
+function ago(t,long){const d=S.t-t;if(d<1)return long?"À l'instant":"à l'instant";if(d<60)return(long?'Il y a ':'')+d+' min';if(d<1440)return(long?'Il y a ':'')+Math.floor(d/60)+' h';return 'Hier'}
+function repRow(r){const k=RT[r.type]||['g',I.check];return '<div class="rep"><span class="ric '+k[0]+'">'+k[1]+'</span><div class="t"><b>'+esc(r.type)+' · '+esc(r.place)+'</b><span>'+ago(r.t,true)+' · '+esc(r.q)+'</span></div><span class="st '+STC[r.status]+'">'+r.status+'</span></div>'}
+
+function pAccueil(){
+  const v=vig(),rs=S.reports.slice().sort((a,b)=>b.t-a.t);
+  const nChk=S.reports.filter(r=>r.status!=='Traité').length,nOk=S.reports.filter(r=>r.status==='Traité').length;
+  return '<div class="hdr"><button class="logo" data-act="logo" aria-label="Yégle Flood">'+I.drop+'</button><div class="hdr-t"><b>Yégle Flood</b><span>Zone pilote · Keur Massar</span></div><button class="bellb" data-go="alertes" aria-label="Alertes">'+I.bell+(S.unread?'<i></i>':'')+'</button></div>'+
+   '<div class="vig'+(v.l===2?' v2':'')+'"><div class="row sb"><span class="lab">Niveau de vigilance aujourd\'hui</span><span class="vbadge v'+v.l+'">'+v.lab+'</span></div><h2>'+esc(v.txt)+'</h2><button class="wbtn" data-go="carte">Voir la carte '+I.arrow+'</button></div>'+
+   '<button class="signal" data-act="openRep"><span class="sic">'+I.cam+'</span><span><b>Signaler un point critique</b><small>Caniveau bouché ou eau qui monte : photo + position</small></span></button>'+
+   '<div class="stats"><div><b class="c-red">'+S.reports.length+'</b><span>Signalés</span></div><div><b class="c-org">'+nChk+'</b><span>À vérifier</span></div><div><b class="c-grn">'+nOk+'</b><span>Traités</span></div></div>'+
+   '<div class="row sb sech"><h3>Derniers signalements</h3><button class="link" data-act="all">'+(S.showAll?'Réduire':'Tout voir')+'</button></div>'+
+   '<div class="card" style="padding:4px 16px">'+(S.showAll?rs:rs.slice(0,3)).map(repRow).join('')+'</div>';
+}
+function pubBadge(z){if(z.off)return['b3','Hors ligne'];if(z.alert===2)return['b2','Alerte en cours'];if(z.alert===1)return['b1','Vigilance en cours'];return null}
+function badgeFor(z){if(z.off)return['b3','Hors ligne'];if(z.st===2)return['b2','Critique'];if(z.st===1)return['b1','Proche du seuil'];return['b0','Normal']}
+function barCol(v,i,n){const a=i/(n-1);return a>.75?'#174A3A':a>.45?'#1F6B50':a>.2?'#8FB3A6':'#C9DED5'}
+function pCapteurs(){
+  const z=Z(S.sel)||S.sensors[0],b=pubBadge(z),tr=trend(z),h=z.hist.filter((v,i)=>i%2===1);
+  const bars=z.off?'<div class="empty" style="width:100%;align-self:center">Plus de données depuis '+hh(z.offT)+'.</div>':h.map((v,i)=>'<i style="height:'+Math.min(100,v/MAXV*100)+'%;background:'+barCol(v,i,h.length)+'"></i>').join('');
+  const others=S.sensors.filter(o=>o.id!==z.id).map(o=>{
+    const ob=pubBadge(o),pct=Math.min(100,o.level/MAXV*100);
+    return '<div class="oth" data-sel="'+o.id+'"><div class="row sb" style="margin-bottom:8px"><b>'+o.id+' · '+esc(o.name)+'</b>'+(ob?'<span class="bdg '+ob[0]+'" style="font-size:12px;padding:4px 9px">'+ob[1]+'</span>':'<span class="v">'+esc(o.q)+'</span>')+'</div>'+
+     (o.off?'<div class="v">Dernière donnée '+ago(o.offT,true).toLowerCase()+' · batterie faible</div>':'<div class="row"><div class="pbar"><i style="width:'+pct+'%;background:#1F6B50"></i></div><span class="v">'+Math.round(o.level)+' cm</span></div>')+'</div>';
+  }).join('');
+  const d=H-z.level;
+  return '<div class="row sb" style="align-items:flex-start;margin-top:8px"><div><h1>Capteurs</h1><p class="sub">Phase pilote · '+S.sensors.length+' capteurs de niveau d\'eau</p></div></div>'+
+   '<div class="card feat"><div class="row sb" style="align-items:flex-start"><div><div class="id">'+z.id+' · '+esc(z.name)+' · '+esc(z.q)+'</div><div class="big">'+(z.off?'—':Math.round(z.level))+' <small>cm</small></div></div>'+(b?'<span class="bdg '+b[0]+'">'+b[1]+'</span>':'')+'</div>'+
+   '<div class="bars">'+bars+'</div>'+
+   '<div class="axis"><span>Il y a 45 min</span><span>Maintenant</span></div>'+
+   '<div class="tiles"><div><span>Tendance</span><b>'+(z.off?'—':ftr(tr))+'</b></div><div><span>Batterie</span><b'+(z.bat<15?' style="color:var(--red)"':'')+'>'+z.bat+' %</b></div><div><span>Mise à jour</span><b>'+(z.off?hh(z.offT):hh(z.lastT||S.t))+'</b></div></div></div>'+
+   '<div class="row sb sech"><h3>Autres capteurs</h3></div><div class="card" style="padding:2px 16px">'+others+'</div>'+
+   (z.off?'':'<div class="measure"><h3>Comment le capteur mesure</h3><p>Le boîtier est fixé à H = '+H+' cm au-dessus du fond. Il envoie des ultrasons et mesure la distance d jusqu\'à l\'eau.</p><div class="f">Niveau = H − d = '+H+' − '+Math.round(d)+' = '+Math.round(z.level)+' cm</div><p>Une mesure toutes les 2 min. Ce sont les équipes Yégle Flood qui analysent ces niveaux et décident d\'envoyer une alerte.</p></div>');
+}
+
+/* --- map --- */
+let SEGS=null;
+function rnd(seed){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646}}
+function buildSegs(){
+  const r=rnd(42),segs=[];
+  const vx=[];for(let x=-8;x<410;x+=24+r()*16)vx.push(x);
+  const hy=[];for(let y=60;y<680;y+=22+r()*14)hy.push(y);
+  vx.forEach((x0,i)=>{const sk=(r()-.5)*.12;let pts=hy.map(y=>[x0+sk*y+Math.sin(y/70+i)*5,y]);for(let k=0;k<pts.length-1;k++)if(r()>.1)segs.push([...pts[k],...pts[k+1]])});
+  hy.forEach((y0,j)=>{const sk=(r()-.5)*.1;let pts=vx.map(x=>[x,y0+sk*x+Math.cos(x/60+j)*4]);for(let k=0;k<pts.length-1;k++)if(r()>.12)segs.push([...pts[k],...pts[k+1]])});
+  return segs;
+}
+function mapSVG(){
+  if(!SEGS)SEGS=buildSegs();
+  const act=S.sensors.filter(z=>!z.off&&z.alert>0);
+  let base='',hot='';
+  SEGS.forEach(s=>{
+    const mx=(s[0]+s[2])/2,my=(s[1]+s[3])/2;let best=-1;
+    act.forEach(z=>{const r=z.alert===2?74:50;if(Math.hypot(mx-z.x,my-z.y)<r&&z.alert>best)best=z.alert});
+    const ln='<line x1="'+s[0].toFixed(1)+'" y1="'+s[1].toFixed(1)+'" x2="'+s[2].toFixed(1)+'" y2="'+s[3].toFixed(1)+'"';
+    if(best>0)hot+=ln+' stroke="'+COL[best]+'" stroke-width="2.3"/>';else base+=ln+'/>';
+  });
+  let g='<rect width="390" height="700" fill="#F1F4F1"/>';
+  g+='<path d="M-10 640C60 600 90 540 150 520S260 500 300 560 380 650 420 660" stroke="#2E86AB" stroke-width="7" fill="none" opacity=".35"/>';
+  g+='<g stroke="#CFD9D4" stroke-width="1.2">'+base+'</g>';
+  g+='<path d="M-10 300C80 290 160 330 230 300S340 250 410 240" stroke="#5E9C82" stroke-width="4" fill="none"/>';
+  g+='<path d="M150 60C170 200 190 300 230 420S260 600 250 700" stroke="#5E9C82" stroke-width="4" fill="none"/>';
+  act.filter(z=>z.alert===2).forEach(z=>{g+='<circle cx="'+z.x+'" cy="'+z.y+'" r="72" fill="#C9432E" fill-opacity=".13" stroke="#C9432E" stroke-opacity=".35"/>'});
+  g+='<g>'+hot+'</g>';
+  S.sensors.forEach(z=>{
+    const s=z.off?3:z.alert,c=COL[s],sel=S.msel===z.id;
+    g+='<g class="mk" data-msel="'+z.id+'">'+
+     '<circle cx="'+z.x+'" cy="'+z.y+'" r="22" fill="'+c+'" fill-opacity=".14"/>'+
+     (s===2?'<circle class="pulse" cx="'+z.x+'" cy="'+z.y+'" r="13" fill="'+c+'"/>':'')+
+     '<circle cx="'+z.x+'" cy="'+z.y+'" r="'+(sel?14:12)+'" fill="#fff" stroke="'+c+'" stroke-width="'+(sel?4.5:3.5)+'"/>'+
+     '<circle cx="'+z.x+'" cy="'+z.y+'" r="5.5" fill="'+c+'"/>';
+    const lab=z.q+(sel||s===2?' · '+z.id:''),w=lab.length*6.6+16,ly=z.y-12,lx=z.x+20+w>386?z.x-20-w:z.x+20;
+    g+='<rect x="'+lx+'" y="'+ly+'" width="'+w+'" height="24" rx="7" fill="#fff" stroke="#E3EAE6"/><text x="'+(lx+8)+'" y="'+(ly+16)+'" font-size="12.5" font-weight="700" fill="#1B2B26" font-family="DM Sans,sans-serif">'+esc(lab)+'</text></g>';
+  });
+  return g;
+}
+function pCarteSkeleton(){return '<div class="mapwrap"><svg id="msvg" viewBox="0 30 390 640" preserveAspectRatio="xMidYMid slice"></svg><div class="mtop" id="mtop"></div><div class="msheet" id="msheet"></div></div>'}
+function renderCarte(){
+  if(!S.msel){const w=S.sensors.filter(z=>!z.off).sort((a,b)=>b.level-a.level)[0];S.msel=w.id}
+  setHTML($('msvg'),mapSVG());
+  const crit=S.alerts.filter(a=>a.type==='eau'&&a.active&&a.lvl===2);
+  let top='<div class="row sb"><div><h1>Carte de surveillance</h1><p class="sub">Dakar · '+S.sensors.length+' capteurs · mis à jour à '+hh(S.t)+'</p></div><button class="filt" aria-label="Filtres">'+I.filt+'</button></div>';
+  if(crit.length){const a=crit[0],z=Z(a.sid);top+='<div class="banner">'+I.warn('#A3311F')+'<div style="flex:1"><b>'+esc(z.q)+' : niveau critique</b><span>'+esc(z.name)+' · évitez la zone et les points bas</span></div><em>'+crit.length+' alerte'+(crit.length>1?'s':'')+'</em></div>'}
+  {const na=S.sensors.filter(z=>z.alert>0).length,on=S.sensors.filter(z=>!z.off).length;top+='<div class="mchips">'+(na?'<span><i class="dot" style="background:#C9432E"></i>'+na+' zone'+(na>1?'s':'')+' en alerte</span>':'<span><i class="dot" style="background:#1F6B50"></i>Aucune alerte</span>')+'<span><i class="dot" style="background:#1F6B50"></i>'+on+' capteurs actifs</span></div>'}
+  setHTML($('mtop'),top);
+  const z=Z(S.msel),b=pubBadge(z),fol=S.follow.has(z.q);
+  setHTML($('msheet'),'<div class="row sb"><span style="color:var(--muted);font-size:14px">Capteur '+z.id+' · '+esc(z.q)+'</span>'+(b?'<span class="bdg '+b[0]+'">'+b[1]+'</span>':'')+'</div>'+
+   '<div class="lv">'+(z.off?'—':Math.round(z.level)+' cm')+' <small>mesuré à '+hh(z.off?z.offT:(z.lastT||S.t))+'</small></div><div style="height:12px"></div>'+
+   '<div class="row"><button class="btn2 out" data-sel="'+z.id+'" data-go="capteurs">Détails</button><button class="btn2" data-act="follow" data-q="'+esc(z.q)+'">'+(fol?'✓ Zone suivie':'Suivre la zone')+'</button></div>');
+}
+
+function alCard(a){
+  let ic,k;
+  if(a.type==='eau'){if(a.lvl===2){k='e2';ic=I.warn('#fff')}else if(a.lvl===1){k='e1';ic=I.warn('#fff')}else{k='ok';ic=I.check}}
+  else if(a.type==='meteo'){k='mt';ic=I.cloud}else if(a.type==='dechets'){k='dc';ic=I.trash}else{k='ok';ic=I.check}
+  return '<div class="al'+(a.type==='eau'&&a.active&&a.lvl?' hot':'')+'"><span class="ic '+k+'">'+ic+'</span><div class="t"><div class="row sb" style="align-items:flex-start"><b>'+esc(a.title)+'</b><time>'+ago(a.t)+'</time></div><p>'+esc(a.msg)+'</p>'+(a.type==='eau'&&a.sid&&a.lvl?'<button class="go" data-msel="'+a.sid+'" data-go="carte">Voir sur la carte →</button>':'')+'</div></div>';
+}
+function pAlertes(){
+  const f=S.filter,list=S.alerts.filter(a=>f==='all'||(f==='eau'&&a.type==='eau')||(f==='dechets'&&(a.type==='dechets'||a.type==='ok'))||(f==='meteo'&&a.type==='meteo'));
+  return '<div class="row sb" style="margin-top:22px"><h1>Alertes</h1><button class="ntog" data-act="notif">Notifications <span class="tg'+(S.notif?' on':'')+'"></span></button></div>'+
+   '<div class="seg">'+[['all','Toutes'],['eau','Eau'],['dechets','Déchets'],['meteo','Météo']].map(x=>'<button data-filter="'+x[0]+'"'+(f===x[0]?' class="on"':'')+'>'+x[1]+'</button>').join('')+'</div>'+
+   (list.length?list.map(alCard).join(''):'<div class="empty">Aucune alerte dans cette catégorie.</div>')+
+   '<div class="tips"><h3>Bons réflexes</h3><ul><li>Ne jetez rien dans les caniveaux.</li><li>Éloignez-vous des canaux et points bas.</li><li>Coupez le courant si l\'eau entre chez vous.</li><li>Gardez vos papiers et un sac d\'urgence en hauteur.</li></ul></div>'+
+   '<div class="sos"><div><b>18</b><span>Sapeurs-pompiers</span></div><div><b>17</b><span>Police</span></div><div><b>1515</b><span>SAMU</span></div></div>'+
+   '<p class="disc">Les alertes aident à prévenir : elles ne remplacent pas les secours officiels.</p>';
+}
+
+let lastPage=null;
+function renderPhone(){
+  const sc=$('screen');
+  if(lastPage!==S.page){lastPage=S.page;sc.scrollTop=0;cache.delete(sc)}
+  sc.classList.toggle('full',S.page==='carte');
+  if(S.page==='accueil')setHTML(sc,pAccueil());
+  else if(S.page==='capteurs')setHTML(sc,pCapteurs());
+  else if(S.page==='carte'){setHTML(sc,pCarteSkeleton());renderCarte()}
+  else setHTML(sc,pAlertes());
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===S.page));
+  const nb=$('navBadge');nb.hidden=!S.unread;nb.textContent=S.unread>9?'9+':S.unread;
+}
+let tt;
+function ptoast(a){
+  const t=$('ptoast');
+  t.innerHTML='<div class="t" data-go="alertes"><span class="ic '+(a.type==='eau'&&a.lvl===2?'e2':a.type==='eau'&&a.lvl===1?'e1':'ok')+'" style="width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex-shrink:0">'+(a.type==='eau'&&a.lvl?I.warn('#fff'):I.check)+'</span><div><small>Yégle Flood · maintenant</small><b>'+esc(a.title)+'</b><span>'+esc(a.msg)+'</span></div></div>';
+  t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),5000);
+}
+
+
+
+/* ================= events ================= */
+let ptr=false,dirty=false,timer=null;
+function render(){dirty=false;renderPhone();}
+function restart(){clearInterval(timer);if(S.playing)timer=setInterval(tick,S.speed)}
+document.addEventListener('pointerdown',()=>{ptr=true});
+document.addEventListener('pointerup',()=>{ptr=false;if(dirty)setTimeout(render,0)});
+document.addEventListener('pointercancel',()=>{ptr=false});
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go],[data-act],[data-sel],[data-msel],[data-filter],[data-rt],[data-atab],[data-spd],[data-wx],[data-mode]');
+  if(!t)return;
+  
+  if(t.dataset.rt){document.querySelectorAll('#rTypes button').forEach(b=>b.classList.toggle('on',b===t));S.rtype=t.dataset.rt;return}
+  if(t.dataset.sel)S.sel=t.dataset.sel;
+  if(t.dataset.msel)S.msel=t.dataset.msel;
+  if(t.dataset.filter)S.filter=t.dataset.filter;
+  if(t.dataset.go){S.page=t.dataset.go;if(S.page==='alertes')S.unread=0;$('ptoast').classList.remove('show')}
+  switch(t.dataset.act){
+    case 'openRep':$('repForm').hidden=false;$('repDone').hidden=true;$('repSheet').hidden=false;break;
+    case 'closeRep':$('repSheet').hidden=true;break;
+    case 'sendRep':{
+      const place=$('rPlace').value.trim()||'Sans repère';
+      addReport({type:S.rtype,place:place.slice(0,60),q:$('rQ').value,photo:S.photo});
+      $('rPlace').value='';S.photo=null;$('rPrev').hidden=true;$('rPhotoTxt').textContent='Ajouter une photo';$('rPhoto').value='';
+      $('repForm').hidden=true;$('repDone').hidden=false;break}
+    case 'all':S.showAll=!S.showAll;break;
+    case 'notif':S.notif=!S.notif;break;
+    case 'follow':{const q=t.dataset.q;S.follow.has(q)?S.follow.delete(q):S.follow.add(q);break}
+  }
+  render();
+});
+$('rQ').innerHTML=QS.map(q=>'<option>'+q+'</option>').join('');
+$('rPhoto').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{
+    const img=new Image();img.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,320/Math.max(img.width,img.height));c.width=img.width*s;c.height=img.height*s;c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      try{S.photo=c.toDataURL('image/jpeg',.8)}catch(err){S.photo=null}
+      $('rPrev').src=S.photo||rd.result;$('rPrev').hidden=false;$('rPhotoTxt').textContent='Photo ajoutée · changer'};
+    img.src=rd.result};
+  rd.readAsDataURL(f);
+});
+
+
+init();
+window.YF={get S(){return S},Z,pushAlert,render,restart};
+
+render();restart();
+})();
+</script>
+<style>
+html,body{overflow:hidden;height:100%;background:#11302A}
+body.tuto #layout{padding:0;min-height:0;display:block}
+#stage{position:fixed;left:50%;top:50%;width:420px;height:1000px;transform-origin:center center}
+#cap{height:178px;color:#fff;padding:8px 6px 0;display:flex;flex-direction:column}
+#cap .top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+#cap .lg{width:34px;height:34px;border-radius:10px;background:#1F6B50;display:grid;place-items:center}
+#cap .brand{font-family:Poppins,sans-serif;font-weight:800;font-size:17px;flex:1}
+#cap .num{font-size:13px;font-weight:700;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:99px}
+#cap h2{font-size:24px;line-height:1.15;color:#fff;margin-bottom:6px;transition:opacity .3s}
+#cap p{font-size:16px;line-height:1.4;opacity:.85;transition:opacity .3s}
+#prog{display:flex;gap:4px;margin-top:auto;margin-bottom:12px}
+#prog i{flex:1;height:4px;border-radius:9px;background:rgba(255,255,255,.18);overflow:hidden;position:relative}
+#prog i.on{background:#A9CDBF}
+#stage .phone{width:410px!important;height:800px!important;border-radius:42px!important;box-shadow:0 0 0 8px #0A211C,0 30px 60px rgba(0,0,0,.4)!important;margin:0 auto}
+#finger{position:fixed;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.55);border:3px solid #11302A;box-shadow:0 6px 18px rgba(0,0,0,.35);z-index:999;pointer-events:none;transform:translate(-50%,-50%) scale(var(--s,1));transition:left .7s cubic-bezier(.4,.1,.2,1),top .7s cubic-bezier(.4,.1,.2,1),opacity .3s;opacity:0}
+#finger.tap{animation:tap .45s ease}
+@keyframes tap{40%{transform:translate(-50%,-50%) scale(calc(var(--s,1)*.75));background:rgba(224,153,47,.8)}}
+#ring{position:fixed;border:4px solid #E0992F;border-radius:22px;z-index:998;pointer-events:none;box-shadow:0 0 0 9999px rgba(17,48,42,.35);opacity:0;transition:opacity .3s,left .4s,top .4s,width .4s,height .4s}
+#endv{position:fixed;inset:0;background:rgba(17,48,42,.92);z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:30px;gap:14px}
+#endv h2{font-size:30px;color:#fff}
+#endv p{font-size:17px;opacity:.85;max-width:360px;line-height:1.45}
+#endv button,#endv a{padding:14px 22px;border-radius:14px;font-weight:700;font-size:16px;text-decoration:none}
+#endv button{background:#fff;color:#11302A}
+#endv a{color:#fff;border:2px solid rgba(255,255,255,.5)}
+#startv{position:fixed;inset:0;background:rgba(17,48,42,.88);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;gap:16px;padding:30px;cursor:pointer}
+#startv .pl{width:92px;height:92px;border-radius:50%;background:#fff;display:grid;place-items:center}
+#startv h2{font-size:28px;color:#fff}
+#startv p{opacity:.8;font-size:16px}
+</style>
+<div id="finger"></div><div id="ring"></div>
+<div id="startv"><div class="pl"><svg width="40" height="40" viewBox="0 0 24 24" fill="#11302A"><path d="M8 5v14l11-7z"/></svg></div><h2>Comment utiliser Yégle Flood</h2><p>Démonstration animée · 1 minute</p></div>
+<div id="endv"><h2>Yégle Flood</h2><p>Mieux repérer. Mieux intervenir. Mieux prévenir.</p><button id="again">↻ Revoir la démo</button><a href="app.html">Ouvrir l'appli</a></div>
+<script>
+(function(){
+const Y=window.YF;Y.S.playing=false;Y.restart();
+document.body.classList.add('tuto');
+const stage=document.createElement('div');stage.id='stage';
+stage.innerHTML='<div id="cap"><div class="top"><span class="lg"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.5c3.6 4.9 6.2 8.3 6.2 11.6a6.2 6.2 0 0 1-12.4 0c0-3.3 2.6-6.7 6.2-11.6z"/></svg></span><span class="brand">Yégle Flood</span><span class="num" id="cnum"></span></div><h2 id="ct"></h2><p id="cx"></p><div id="prog"></div></div>';
+document.body.appendChild(stage);stage.appendChild(document.getElementById('phone'));
+const N=9;document.getElementById('prog').innerHTML='<i></i>'.repeat(N);
+let sc=1;
+function fit(){sc=Math.min(innerWidth/420,innerHeight/1000);stage.style.transform='translate(-50%,-50%) scale('+sc+')';F.style.setProperty('--s',sc)}
+const F=document.getElementById('finger'),R=document.getElementById('ring');
+addEventListener('resize',fit);fit();
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const q=s=>document.querySelector(s);
+function cap(n,t,x){document.getElementById('cnum').textContent=n+' / '+N;const ct=q('#ct'),cx=q('#cx');ct.style.opacity=cx.style.opacity=0;setTimeout(()=>{ct.textContent=t;cx.textContent=x;ct.style.opacity=cx.style.opacity=1},250);document.querySelectorAll('#prog i').forEach((e,i)=>e.classList.toggle('on',i<n))}
+async function show(el){if(!el)return;const scr=q('#screen');const r=el.getBoundingClientRect(),sr=scr.getBoundingClientRect();if(r.top<sr.top+20||r.bottom>sr.bottom-20){el.scrollIntoView({block:'center',behavior:'smooth'});await sleep(650)}}
+async function ring(sel,ms){const el=typeof sel==='string'?q(sel):sel;if(!el)return;await show(el);const r=el.getBoundingClientRect();Object.assign(R.style,{left:(r.left-6)+'px',top:(r.top-6)+'px',width:(r.width+12)+'px',height:(r.height+12)+'px',opacity:1});await sleep(ms);R.style.opacity=0;await sleep(250)}
+async function tap(sel){const el=typeof sel==='string'?q(sel):sel;if(!el)return;await show(el);const r=el.getBoundingClientRect();F.style.opacity=1;F.style.left=(r.left+r.width/2)+'px';F.style.top=(r.top+r.height/2)+'px';await sleep(800);F.classList.remove('tap');void F.offsetWidth;F.classList.add('tap');await sleep(220);el.dispatchEvent(new MouseEvent('click',{bubbles:true}));await sleep(600)}
+async function type(sel,txt){const el=q(sel);await tap(el);for(const ch of txt){el.value+=ch;await sleep(70)}await sleep(400)}
+async function run(){
+  F.style.left=innerWidth/2+'px';F.style.top=innerHeight*.75+'px';
+  cap(1,'Bienvenue sur Yégle Flood','L\'appli qui prévient les habitants avant que l\'eau ne déborde.');await sleep(3500);
+  cap(2,'La vigilance du jour','En un coup d\'œil, le niveau de vigilance de ton quartier.');await sleep(400);await ring('.vig',3200);
+  cap(3,'Signaler un problème','Un caniveau bouché ? Touche « Signaler un point critique ».');await sleep(900);await tap('.signal');await sleep(500);
+  q('#cx').textContent='Choisis le problème, le quartier, le repère et ajoute une photo.';
+  await tap('[data-rt="Caniveau obstrué"]');await type('#rPlace','Rue 12, devant l\'école');
+  await tap('[data-act=sendRep]');await sleep(2200);await tap('#repDone [data-act=closeRep]');
+  cap(4,'Suivre son signalement','Il apparaît tout de suite. L\'équipe le vérifie, puis intervient.');await sleep(600);
+  await ring('.rep',1800);Y.S.reports[0].status='À vérifier';Y.render();await ring('.rep',1800);Y.S.reports[0].status='Traité';Y.render();
+  q('#cx').textContent='Curage terminé : le signalement passe à « Traité ».';await ring('.rep',2200);
+  cap(5,'Les capteurs','Les niveaux d\'eau mesurés toutes les 2 minutes dans les caniveaux.');await sleep(500);await tap('#nav [data-go=capteurs]');await ring('.feat',2600);
+  await tap(document.querySelectorAll('.oth')[3]);await sleep(1800);
+  cap(6,'La carte','Tous les capteurs de la zone. Touche un point pour voir sa mesure.');await sleep(500);await tap('#nav [data-go=carte]');await sleep(1200);await tap('[data-msel="C-05"]');await sleep(2000);
+  cap(7,'Recevoir une alerte','Quand l\'équipe valide un danger, tu reçois une notification.');await sleep(1200);
+  const z=Y.Z('C-03');Y.S.alerts.forEach(a=>{if(a.sid==='C-03')a.active=false});z.alert=2;
+  Y.pushAlert({type:'eau',lvl:2,sid:'C-03',active:true,title:'Niveau critique · Canal Rue 12',msg:'Évitez les abords du canal et les points bas à Keur Massar.'});Y.S.msel='C-03';Y.render();
+  await sleep(2600);await tap('#ptoast .t');await sleep(800);await ring('.al.hot',2400);
+  cap(8,'Les bons réflexes','Consignes de sécurité et numéros d\'urgence, toujours à portée de main.');await sleep(500);await ring('.tips',2600);await ring('.sos',2200);
+  cap(9,'C\'est tout !','Signaler, suivre, être prévenu : Yégle Flood protège ton quartier.');F.style.opacity=0;await sleep(2500);
+  q('#endv').style.display='flex';
+}
+q('#again').onclick=()=>location.reload();
+let started=false;const go=()=>{if(started)return;started=true;q('#startv').style.display='none';run()};q('#startv').onclick=go;setTimeout(go,2500);
+})();
+</script>
+
+</body>
+</html>
